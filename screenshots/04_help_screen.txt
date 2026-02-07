@@ -1,0 +1,36 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ChessCode - Interactive Chess TUI                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  AI Assistant - Help                                                         ║
+║                                                                              ║
+║  ChessCode Help                                                              ║
+║                                                                              ║
+║  Making Moves:                                                               ║
+║  - Type moves in standard chess notation (e.g., 'e4', 'Nf3', 'O-O')         ║
+║  - Press Enter or click Send to make the move                               ║
+║                                                                              ║
+║  Asking Questions:                                                           ║
+║  - Type any question about chess or the current position                     ║
+║  - Examples: "What's the best move?", "Analyze this position"               ║
+║                                                                              ║
+║  Keyboard Shortcuts:                                                         ║
+║  - q: Quit application                                                       ║
+║  - r: Reset game                                                             ║
+║  - u: Undo last move                                                         ║
+║  - h: Show this help                                                         ║
+║  - a: Quick position analysis                                                ║
+║                                                                              ║
+║  Move Notation:                                                              ║
+║  - Pawn moves: e4, d5, exd5 (capture)                                        ║
+║  - Piece moves: Nf3, Bb5, Qd4                                                ║
+║  - Castling: O-O (kingside), O-O-O (queenside)                               ║
+║  - Check: Nf3+                                                               ║
+║  - Checkmate: Qh7#                                                           ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Screenshot 4: Help screen showing all commands and features

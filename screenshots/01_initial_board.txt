@@ -1,0 +1,30 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ChessCode - Interactive Chess TUI                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Chess Board                          │  AI Assistant                        ║
+║  ┌─────────────────────────────────┐  │                                      ║
+║8 │ ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  │         │  AI Assistant ready!                 ║
+║7 │ ♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟  │         │  Ask me anything about chess.        ║
+║6 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
+║5 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  Try: 'What's the best opening       ║
+║4 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  move?' or 'Analyze this position'   ║
+║3 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
+║2 │ ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙  │         │                                      ║
+║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖  │         │                                      ║
+║  └─────────────────────────────────┘  │                                      ║
+║    a   b   c   d   e   f   g   h      │                                      ║
+║                                        │                                      ║
+║  Game Status                           │  Move History                        ║
+║  Turn: White                           │  No moves yet                        ║
+║  Status: Active                        │                                      ║
+║  Material: Equal                       │                                      ║
+║                                        │                                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Screenshot 1: Initial board state with AI assistant ready

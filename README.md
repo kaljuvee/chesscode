@@ -1,98 +1,146 @@
-# Interactive Chess Assistant
+# ChessCode - Interactive Chess TUI
 
-An interactive chess application built with Streamlit featuring AI-powered analysis, multiple AI personalities, and comprehensive game management features.
+An interactive terminal-based chess application built with Textual, featuring an AI assistant powered by LangGraph and Grok-4 for intelligent analysis and free-form question answering.
+
+This project migrates the original Streamlit-based `chesscode` application to a modern, responsive terminal user interface (TUI).
 
 ## Features
 
-- 🎮 Interactive chess board with drag-and-drop functionality
-- 🤖 AI analysis powered by GPT-4
-- 👥 Multiple AI personalities (Grandmaster, Coach, Aggressive Player, Defensive Expert)
-- 📊 Position analysis and material balance
-- 💾 Save and load game functionality
-- 📝 Move history tracking
-- ⚡ Real-time game state indicators
+- **Interactive Terminal UI**: A fully interactive chessboard experience in your terminal, built with the Textual framework.
+- **AI-Powered Analysis**: Get strategic insights and move suggestions from an AI assistant powered by Grok-4 and LangGraph.
+- **Free-Form Questions**: Ask any question about the current position, chess strategy, or openings in natural language.
+- **Real-Time Game State**: Keep track of whose turn it is, game status (check, checkmate), and material advantage.
+- **Move History**: View a complete history of all moves made in the current game.
+- **Keyboard Shortcuts**: Use convenient shortcuts for common actions like resetting the game, undoing moves, and getting help.
+
+## Screenshots
+
+Here are some text-based screenshots demonstrating the TUI in action:
+
+**1. Initial Board State**
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ChessCode - Interactive Chess TUI                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Chess Board                          │  AI Assistant                        ║
+║  ┌─────────────────────────────────┐  │                                      ║
+║8 │ ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  │         │  AI Assistant ready!                 ║
+║7 │ ♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟  │         │  Ask me anything about chess.        ║
+║6 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
+║5 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  Try: 'What's the best opening       ║
+║4 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  move?' or 'Analyze this position'   ║
+║3 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
+║2 │ ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙  │         │                                      ║
+║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖  │         │                                      ║
+║  └─────────────────────────────────┘  │                                      ║
+║    a   b   c   d   e   f   g   h      │                                      ║
+║                                        │                                      ║
+║  Game Status                           │  Move History                        ║
+║  Turn: White                           │  No moves yet                        ║
+║  Status: Active                        │                                      ║
+║  Material: Equal                       │                                      ║
+║                                        │                                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+**2. AI Analysis in Action**
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ChessCode - Interactive Chess TUI                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Chess Board                          │  AI Assistant                        ║
+║  ┌─────────────────────────────────┐  │                                      ║
+║8 │ ♜  ·  ♝  ♛  ♚  ♝  ♞  ♜  │         │  You: What should I play next?       ║
+║7 │ ♟  ♟  ♟  ♟  ·  ♟  ♟  ♟  │         │                                      ║
+║6 │ ·  ·  ♞  ·  ·  ·  ·  ·  │         │  AI: This is a standard Italian      ║
+║5 │ ·  ·  ·  ·  ♟  ·  ·  ·  │         │  Game opening. White has several     ║
+║4 │ ·  ·  ·  ·  ♙  ·  ·  ·  │         │  strong options:                     ║
+║3 │ ·  ·  ·  ·  ·  ♘  ·  ·  │         │                                      ║
+║2 │ ♙  ♙  ♙  ♙  ·  ♙  ♙  ♙  │         │  1. Bc4 - Develops the bishop to    ║
+║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ·  ♖  │         │     an active square, attacking f7   ║
+║  └─────────────────────────────────┘  │                                      ║
+║    a   b   c   d   e   f   g   h      │  2. Bb5 - The Ruy Lopez, one of     ║
+║                                        │     the most popular openings        ║
+║  Game Status                           │                                      ║
+║  Turn: White                           │  3. d4 - Challenging the center      ║
+║  Status: Active                        │     immediately                      ║
+║  Material: Equal                       │                                      ║
+║                                        │  I recommend Bc4 for a classical     ║
+║                                        │  Italian Game setup.                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/chess-assistant.git
-cd chess-assistant
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/kaljuvee/chesscode.git
+    cd chesscode
+    ```
 
-2. Create and activate a virtual environment:
-```bash
-# Windows
-python -m venv venv
-.\venv\Scripts\activate
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. Install the required packages:
-```bash
-pip install -r requirements.txt
-```
-
-4. Set up your OpenAI API key:
-   - Create a `.streamlit` folder in your project directory
-   - Create a `secrets.toml` file inside the `.streamlit` folder
-   - Add your OpenAI API key:
-     ```toml
-     OPENAI_API_KEY = "your-api-key-here"
-     ```
+3.  **Set up your environment variables:**
+    Create a `.env` file in the root of the project and add your XAI API key:
+    ```env
+    # LLM Provider Configuration
+    MODEL_PROVIDER=xai
+    MODEL=grok-4-fast-reasoning
+    XAI_API_KEY=your-xai-api-key-here
+    ```
 
 ## Usage
 
-1. Start the application:
+Run the Textual TUI application:
+
 ```bash
-streamlit run app.py
+python3 chess_tui.py
 ```
 
-2. Open your web browser and navigate to `http://localhost:8501`
-
-3. Play chess and get AI analysis:
-   - Make moves by dragging and dropping pieces
-   - View AI analysis in the chat window
-   - Change AI personalities using the sidebar
-   - Save/load games as needed
+-   **Make moves** by typing standard chess notation (e.g., `e4`, `Nf3`, `O-O`) and pressing Enter.
+-   **Ask questions** in natural language (e.g., `analyze this position`, `what is the best move?`).
 
 ## Project Structure
 
 ```
-chess-assistant/
-├── app.py                 # Main application file
-├── .streamlit/
-│   ├── config.toml       # Streamlit configuration
-│   └── secrets.toml      # API keys (not in version control)
-├── requirements.txt      # Python dependencies
-└── README.md            # This file
+chesscode/
+├── chess_agent.py      # Core LangGraph agent for chess analysis
+├── chess_tui.py        # Main Textual TUI application
+├── llm_provider.py     # XAI (Grok) integration
+├── requirements.txt    # Python dependencies
+├── .env                # Environment configuration (not in version control)
+└── README.md           # This file
 ```
 
-## AI Personalities
+## Architecture
 
-- **Grandmaster**: Provides deep strategic analysis and long-term plans
-- **Coach**: Offers educational insights and learning opportunities
-- **Aggressive Player**: Focuses on tactical opportunities and attacking chances
-- **Defensive Expert**: Emphasizes prophylaxis and solid positioning
+The application's intelligence is powered by a `ChessAgent` built with **LangGraph**. This agent processes user queries, analyzes the current board state, and uses the **Grok-4** model from **xAI** to generate insightful and educational responses.
 
-## Game Management
-
-- Save games as JSON files with complete move history and analysis
-- Load previously saved games to continue analysis
-- Track material balance and position evaluation
-- View complete move history in standard chess notation
+The user interface is built with **Textual**, a modern TUI framework for Python, providing a responsive and interactive experience directly in the terminal.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/improvement`)
-5. Create a Pull Request
+1.  Fork the repository
+2.  Create a feature branch (`git checkout -b feature/your-feature`)
+3.  Commit your changes (`git commit -am 'Add some feature'`)
+4.  Push to the branch (`git push origin feature/your-feature`)
+5.  Create a new Pull Request
 
-## References
+## License
 
-- [PG Mentor](https://www.pgnmentor.com/files.html)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

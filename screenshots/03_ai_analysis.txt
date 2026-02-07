@@ -1,0 +1,31 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ChessCode - Interactive Chess TUI                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Chess Board                          │  AI Assistant                        ║
+║  ┌─────────────────────────────────┐  │                                      ║
+║8 │ ♜  ·  ♝  ♛  ♚  ♝  ♞  ♜  │         │  You: What should I play next?       ║
+║7 │ ♟  ♟  ♟  ♟  ·  ♟  ♟  ♟  │         │                                      ║
+║6 │ ·  ·  ♞  ·  ·  ·  ·  ·  │         │  AI: This is a standard Italian      ║
+║5 │ ·  ·  ·  ·  ♟  ·  ·  ·  │         │  Game opening. White has several     ║
+║4 │ ·  ·  ·  ·  ♙  ·  ·  ·  │         │  strong options:                     ║
+║3 │ ·  ·  ·  ·  ·  ♘  ·  ·  │         │                                      ║
+║2 │ ♙  ♙  ♙  ♙  ·  ♙  ♙  ♙  │         │  1. Bc4 - Develops the bishop to    ║
+║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ·  ♖  │         │     an active square, attacking f7   ║
+║  └─────────────────────────────────┘  │                                      ║
+║    a   b   c   d   e   f   g   h      │  2. Bb5 - The Ruy Lopez, one of     ║
+║                                        │     the most popular openings        ║
+║  Game Status                           │                                      ║
+║  Turn: White                           │  3. d4 - Challenging the center      ║
+║  Status: Active                        │     immediately                      ║
+║  Material: Equal                       │                                      ║
+║                                        │  I recommend Bc4 for a classical     ║
+║                                        │  Italian Game setup.                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Screenshot 3: AI providing strategic analysis and move suggestions
