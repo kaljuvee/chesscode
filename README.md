@@ -4,7 +4,7 @@
 
 An interactive terminal-based chess application built with **Textual**, featuring an AI assistant powered by **LangGraph** and **Grok-4** for intelligent analysis and free-form question answering.
 
-![Initial State](docs/01_initial_state.svg)
+![Initial State](docs/screenshots/chess-cli-example.png)
 
 ## Features
 

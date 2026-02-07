@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Chess TUI - Interactive chess application with AI assistance."""
+"""Chess TUI - Interactive chess application with a shell-style interface."""
 import asyncio
 import os
+import sys
 from pathlib import Path
 from datetime import datetime
 
@@ -12,8 +13,12 @@ from dotenv import load_dotenv
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Header, Footer, Static, Input, Button, Label, RichLog
-from textual.binding import Binding
 from textual.reactive import reactive
+from textual import on
+
+from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
 
 from agents.chess_agent import ChessAgent
 
@@ -25,14 +30,6 @@ PIECE_SYMBOLS = {
     '.': '·'
 }
 
-PIECE_COLORS = {
-    'P': 'bold white', 'N': 'bold white', 'B': 'bold white', 
-    'R': 'bold white', 'Q': 'bold white', 'K': 'bold white',
-    'p': 'bold black', 'n': 'bold black', 'b': 'bold black',
-    'r': 'bold black', 'q': 'bold black', 'k': 'bold black',
-    '.': 'dim white'
-}
-
 
 class ChessBoard(Static):
     """Widget to display the chess board."""
@@ -42,7 +39,7 @@ class ChessBoard(Static):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.border_title = "Chess Board"
+        self.border_title = "Board"
     
     def render(self) -> str:
         """Render the chess board with Unicode pieces."""
@@ -80,10 +77,6 @@ class ChessBoard(Static):
     
     def watch_board(self, board: chess.Board) -> None:
         """React to board changes."""
-        self.refresh()
-    
-    def watch_selected_square(self, square: int) -> None:
-        """React to square selection changes."""
         self.refresh()
 
 
@@ -138,146 +131,131 @@ Material: {self.material}"""
 
 
 class ChatLog(RichLog):
-    """Widget to display AI chat responses."""
+    """Widget to display AI chat responses and shell activity."""
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.border_title = "AI Assistant"
+        self.border_title = "Terminal"
+        self.wrap = True
+        self.markup = True
 
 
 class ChessTUI(App):
-    """A Textual TUI for playing chess with AI assistance."""
+    """A Textual TUI for playing chess with a command-driven shell interface."""
     
     CSS = """
     Screen {
-        layout: grid;
-        grid-size: 3 3;
-        grid-rows: auto 1fr auto;
+        layout: horizontal;
+        background: $background;
     }
     
-    Header {
-        column-span: 3;
+    #shell_container {
+        width: 1.8fr;
+        height: 100%;
+        border: solid $accent;
+        padding: 0 1;
     }
     
-    Footer {
-        column-span: 3;
+    #side_container {
+        width: 1fr;
+        height: 100%;
+        border-left: solid $accent;
+        padding: 0 1;
     }
     
-    #board_container {
-        row-span: 2;
-        width: 45;
+    ChatLog {
+        height: 1fr;
+        border: none;
+        background: $background;
     }
     
-    #info_container {
-        row-span: 1;
+    #input_area {
+        height: auto;
+        border-top: solid $accent;
+        layout: horizontal;
     }
     
-    #history_container {
-        row-span: 1;
+    #prompt_label {
+        width: auto;
+        padding: 1 1;
+        color: $accent;
+        text-style: bold;
     }
     
-    #chat_container {
-        column-span: 2;
-        row-span: 2;
+    Input {
+        width: 1fr;
+        border: none;
+        background: $background;
     }
     
     ChessBoard {
         height: 20;
+        margin-bottom: 1;
         border: solid green;
+    }
+    
+    MoveHistory {
+        height: 1fr;
+        border: solid yellow;
+        margin-bottom: 1;
     }
     
     GameInfo {
         height: 10;
         border: solid blue;
     }
-    
-    MoveHistory {
-        height: 10;
-        border: solid yellow;
-    }
-    
-    ChatLog {
-        border: solid cyan;
-    }
-    
-    #input_container {
-        column-span: 3;
-        height: auto;
-        layout: horizontal;
-    }
-    
-    Input {
-        width: 1fr;
-    }
-    
-    Button {
-        width: auto;
-    }
     """
     
-    BINDINGS = [
-        Binding("q", "quit", "Quit"),
-        Binding("r", "reset", "Reset Game"),
-        Binding("u", "undo", "Undo Move"),
-        Binding("h", "help", "Help"),
-        Binding("a", "analyze", "Analyze Position"),
-    ]
+    # No global BINDINGS anymore, everything is command-driven
     
-    TITLE = "ChessCode - Interactive Chess TUI"
+    TITLE = "ChessCode Shell"
     
     def __init__(self):
         super().__init__()
         self.board = chess.Board()
         self.agent = None
         self.move_count = 1
-        self.selected_square = None
-    
+        
     async def on_mount(self) -> None:
         """Initialize the application."""
-        # Load environment variables
         load_dotenv()
         
-        # Initialize chess agent
-        self.chat_log.write("[bold green]Initializing AI Chess Assistant...[/bold green]")
+        self.chat_log.write(f"[bold cyan]ChessCode CLI - Interactive Chess Agent[/bold cyan]")
+        self.chat_log.write(f"[dim]Model: {os.getenv('MODEL', 'grok-4-fast-reasoning')}[/dim]")
+        self.chat_log.write(f"[dim]Provider: {os.getenv('MODEL_PROVIDER', 'xai')}[/dim]")
+        self.chat_log.write("Type [bold yellow]'help'[/bold yellow] for commands or ask a question.\n")
+        
         try:
             self.agent = ChessAgent()
-            self.chat_log.write("[bold green]AI Assistant ready! Ask me anything about chess.[/bold green]")
-            self.chat_log.write("[dim]Try: 'What's the best opening move?' or 'Analyze this position'[/dim]")
+            self.chat_log.write("[bold green]Agent ready![/bold green]")
         except Exception as e:
-            self.chat_log.write(f"[bold red]Error initializing AI: {str(e)}[/bold red]")
+            self.chat_log.write(f"[bold red]Error initializing agent: {str(e)}[/bold red]")
         
         self.update_game_info()
-    
+        self.input.focus()
+
     def compose(self) -> ComposeResult:
         """Create child widgets."""
         yield Header()
         
-        # Left column - Board and info
-        with Vertical(id="board_container"):
-            self.chess_board = ChessBoard()
-            yield self.chess_board
-        
-        with Vertical(id="info_container"):
-            self.game_info = GameInfo()
-            yield self.game_info
-        
-        with Vertical(id="history_container"):
-            self.move_history = MoveHistory()
-            yield self.move_history
-        
-        # Right column - Chat
-        with Vertical(id="chat_container"):
+        with Vertical(id="shell_container"):
             self.chat_log = ChatLog()
             yield self.chat_log
+            with Horizontal(id="input_area"):
+                yield Label("You: ", id="prompt_label")
+                self.input = Input(placeholder="type move or command...")
+                yield self.input
         
-        # Bottom - Input
-        with Horizontal(id="input_container"):
-            self.input = Input(placeholder="Enter move (e.g., 'e4', 'Nf3') or ask a question...")
-            yield self.input
-            yield Button("Send", id="send_btn", variant="primary")
-        
+        with Vertical(id="side_container"):
+            self.chess_board = ChessBoard()
+            yield self.chess_board
+            self.move_history = MoveHistory()
+            yield self.move_history
+            self.game_info = GameInfo()
+            yield self.game_info
+            
         yield Footer()
-    
+
     def update_game_info(self):
         """Update game information display."""
         self.game_info.turn = "White" if self.board.turn else "Black"
@@ -306,161 +284,131 @@ class ChessTUI(App):
             self.game_info.material = f"Black +{abs(diff)}"
         else:
             self.game_info.material = "Equal"
-    
-    async def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button press."""
-        if event.button.id == "send_btn":
-            await self.process_input()
-    
-    async def on_input_submitted(self, event: Input.Submitted) -> None:
-        """Handle input submission."""
-        await self.process_input()
-    
-    async def process_input(self):
-        """Process user input (move or question)."""
-        user_input = self.input.value.strip()
+
+    @on(Input.Submitted)
+    async def handle_input(self, event: Input.Submitted) -> None:
+        """Handle shell input."""
+        user_input = event.value.strip()
         if not user_input:
             return
         
         self.input.value = ""
+        self.chat_log.write(f"[bold green]You:[/bold green] {user_input}")
         
-        # Check if it's a move or a question
-        if self.is_move_notation(user_input):
-            await self.make_move(user_input)
+        # Command Registry
+        cmd = user_input.lower()
+        if cmd in ['help', 'h', '?']:
+            self.show_help()
+        elif cmd in ['reset', 'r', '..']:
+            self.reset_game()
+        elif cmd in ['undo', 'u']:
+            self.undo_move()
+        elif cmd in ['analyze', 'a']:
+            await self.ask_question("Analyze the current position")
+        elif cmd == 'cls':
+            self.chat_log.clear()
+        elif cmd in ['exit', 'quit', 'q']:
+            self.exit()
         else:
-            await self.ask_question(user_input)
-    
+            # Not a command, check if it's a move or a generic question
+            if self.is_move_notation(user_input):
+                await self.make_move(user_input)
+            else:
+                await self.ask_question(user_input)
+
     def is_move_notation(self, text: str) -> bool:
         """Check if text looks like a chess move."""
-        # Simple heuristic: short strings with chess notation patterns
-        if len(text) > 10:
-            return False
-        
-        # Common move patterns
-        move_patterns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',  # pawn moves
-                        'N', 'B', 'R', 'Q', 'K',  # piece moves
-                        'O-O', '0-0',  # castling
-                        'x', '+', '#']  # captures, check, checkmate
-        
+        if len(text) > 10: return False
+        move_patterns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'N', 'B', 'R', 'Q', 'K', 'O-O', '0-0']
         return any(pattern in text for pattern in move_patterns)
-    
+
     async def make_move(self, move_str: str):
-        """Attempt to make a move on the board."""
+        """Attempt to make a move."""
         try:
-            # Try to parse the move
             move = self.board.parse_san(move_str)
-            
             if move not in self.board.legal_moves:
                 self.chat_log.write(f"[bold red]Illegal move: {move_str}[/bold red]")
                 return
             
-            # Make the move
             san_move = self.board.san(move)
             self.board.push(move)
-            
-            # Update display
             self.chess_board.board = self.board
             self.move_history.add_move(san_move, self.move_count)
             
-            if not self.board.turn:  # If it's now black's turn, increment move count
-                self.move_count += 1
-            
+            if not self.board.turn: self.move_count += 1
             self.update_game_info()
-            
             self.chat_log.write(f"[bold green]Move played: {san_move}[/bold green]")
             
-            # Check game status
             if self.board.is_checkmate():
-                winner = "Black" if self.board.turn else "White"
-                self.chat_log.write(f"[bold yellow]Checkmate! {winner} wins![/bold yellow]")
-            elif self.board.is_stalemate():
-                self.chat_log.write("[bold yellow]Stalemate! Game is a draw.[/bold yellow]")
-            elif self.board.is_check():
-                self.chat_log.write("[bold yellow]Check![/bold yellow]")
-        
-        except ValueError as e:
-            self.chat_log.write(f"[bold red]Invalid move: {move_str}[/bold red]")
+                self.chat_log.write(f"[bold yellow]Checkmate! {'Black' if self.board.turn else 'White'} wins![/bold yellow]")
         except Exception as e:
-            self.chat_log.write(f"[bold red]Error: {str(e)}[/bold red]")
-    
+            self.chat_log.write(f"[bold red]Invalid move: {move_str}[/bold red]")
+
     async def ask_question(self, question: str):
-        """Ask the AI assistant a question."""
+        """Query the AI agent."""
         if not self.agent:
-            self.chat_log.write("[bold red]AI Assistant not available[/bold red]")
+            self.chat_log.write("[bold red]Agent not available[/bold red]")
             return
         
-        self.chat_log.write(f"[bold cyan]You:[/bold cyan] {question}")
         self.chat_log.write("[dim]Thinking...[/dim]")
-        
         try:
             response = await self.agent.query(question, self.board.fen())
-            self.chat_log.write(f"[bold green]AI:[/bold green] {response}")
+            self.chat_log.write(f"[bold cyan]AI:[/bold cyan] {response}")
         except Exception as e:
             self.chat_log.write(f"[bold red]Error: {str(e)}[/bold red]")
-    
-    def action_reset(self) -> None:
-        """Reset the game."""
+
+    def show_help(self):
+        """Show rich help table."""
+        table = Table(title="ChessCode Global Commands (BASH-STYLE)", border_style="cyan", show_header=True)
+        table.add_column("Command", style="bold yellow")
+        table.add_column("Description", style="white")
+        table.add_column("Aliases", style="dim white")
+        
+        table.add_row("help", "Displays this menu", "h, ?")
+        table.add_row("<move>", "Make a move (e.g., e4, Nf3)", "-")
+        table.add_row("analyze", "Quick position analysis", "a")
+        table.add_row("undo", "Undo the last move", "u")
+        table.add_row("reset", "Reset the game context", "r, ..")
+        table.add_row("cls", "Clear the terminal screen", "-")
+        table.add_row("exit", "Quit the application", "q, quit")
+        
+        self.chat_log.write(table)
+        self.chat_log.write("[dim]Note: Any other input is handled by the AI Chess Agent (LangGraph).[/dim]\n")
+
+    def reset_game(self):
+        """Reset game state."""
         self.board = chess.Board()
         self.chess_board.board = self.board
         self.move_history.clear_moves()
         self.move_count = 1
         self.update_game_info()
         self.chat_log.write("[bold yellow]Game reset![/bold yellow]")
-    
-    def action_undo(self) -> None:
-        """Undo the last move."""
+
+    def undo_move(self):
+        """Undo last move."""
         if len(self.board.move_stack) > 0:
             self.board.pop()
             self.chess_board.board = self.board
             self.update_game_info()
             self.chat_log.write("[bold yellow]Move undone[/bold yellow]")
-            # Rebuild move history
+            # Sync move history - simple refresh by clearing and adding all remaining
             self.move_history.clear_moves()
-            move_num = 1
+            temp_board = chess.Board()
             for i, move in enumerate(self.board.move_stack):
-                if i % 2 == 0:
-                    self.move_history.add_move(self.board.san(move), move_num)
-                else:
-                    self.move_history.add_move(self.board.san(move), move_num)
-                    move_num += 1
+                mv_num = (i // 2) + 1
+                san = temp_board.san(move)
+                self.move_history.add_move(san, mv_num)
+                temp_board.push(move)
         else:
             self.chat_log.write("[bold red]No moves to undo[/bold red]")
-    
-    def action_help(self) -> None:
-        """Show help information."""
-        help_text = """[bold]ChessCode Help[/bold]
 
-[bold cyan]Making Moves:[/bold cyan]
-- Type moves in standard chess notation (e.g., 'e4', 'Nf3', 'O-O')
-- Press Enter or click Send to make the move
-
-[bold cyan]Asking Questions:[/bold cyan]
-- Type any question about chess or the current position
-- Examples: "What's the best move?", "Analyze this position", "Explain this opening"
-
-[bold cyan]Keyboard Shortcuts:[/bold cyan]
-- q: Quit application
-- r: Reset game
-- u: Undo last move
-- h: Show this help
-- a: Quick position analysis
-
-[bold cyan]Move Notation:[/bold cyan]
-- Pawn moves: e4, d5, exd5 (capture)
-- Piece moves: Nf3, Bb5, Qd4
-- Castling: O-O (kingside), O-O-O (queenside)
-- Check: Nf3+
-- Checkmate: Qh7#"""
-        
-        self.chat_log.write(help_text)
-    
-    async def action_analyze(self) -> None:
-        """Quick position analysis."""
-        await self.ask_question("Analyze the current position")
+    def exit(self):
+        """Exit the app."""
+        self.chat_log.write("[bold red]Exiting...[/bold red]")
+        sys.exit(0)
 
 
 def main():
-    """Run the Chess TUI application."""
     app = ChessTUI()
     app.run()
 
