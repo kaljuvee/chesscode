@@ -1,8 +1,10 @@
+> **Note:** This project has been completely migrated from a Streamlit web app to a modern Textual TUI application. See the [Changelog](CHANGELOG.md) for full details.
+
 # ChessCode - Interactive Chess TUI
 
-An interactive terminal-based chess application built with Textual, featuring an AI assistant powered by LangGraph and Grok-4 for intelligent analysis and free-form question answering.
+An interactive terminal-based chess application built with **Textual**, featuring an AI assistant powered by **LangGraph** and **Grok-4** for intelligent analysis and free-form question answering.
 
-This project migrates the original Streamlit-based `chesscode` application to a modern, responsive terminal user interface (TUI).
+![Initial State](docs/01_initial_state.svg)
 
 ## Features
 
@@ -12,75 +14,6 @@ This project migrates the original Streamlit-based `chesscode` application to a 
 - **Real-Time Game State**: Keep track of whose turn it is, game status (check, checkmate), and material advantage.
 - **Move History**: View a complete history of all moves made in the current game.
 - **Keyboard Shortcuts**: Use convenient shortcuts for common actions like resetting the game, undoing moves, and getting help.
-
-## Screenshots
-
-Here are some text-based screenshots demonstrating the TUI in action:
-
-**1. Initial Board State**
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        ChessCode - Interactive Chess TUI                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  Chess Board                          │  AI Assistant                        ║
-║  ┌─────────────────────────────────┐  │                                      ║
-║8 │ ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  │         │  AI Assistant ready!                 ║
-║7 │ ♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟  │         │  Ask me anything about chess.        ║
-║6 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
-║5 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  Try: 'What's the best opening       ║
-║4 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │  move?' or 'Analyze this position'   ║
-║3 │ ·  ·  ·  ·  ·  ·  ·  ·  │         │                                      ║
-║2 │ ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙  │         │                                      ║
-║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖  │         │                                      ║
-║  └─────────────────────────────────┘  │                                      ║
-║    a   b   c   d   e   f   g   h      │                                      ║
-║                                        │                                      ║
-║  Game Status                           │  Move History                        ║
-║  Turn: White                           │  No moves yet                        ║
-║  Status: Active                        │                                      ║
-║  Material: Equal                       │                                      ║
-║                                        │                                      ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
-
-**2. AI Analysis in Action**
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        ChessCode - Interactive Chess TUI                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  Chess Board                          │  AI Assistant                        ║
-║  ┌─────────────────────────────────┐  │                                      ║
-║8 │ ♜  ·  ♝  ♛  ♚  ♝  ♞  ♜  │         │  You: What should I play next?       ║
-║7 │ ♟  ♟  ♟  ♟  ·  ♟  ♟  ♟  │         │                                      ║
-║6 │ ·  ·  ♞  ·  ·  ·  ·  ·  │         │  AI: This is a standard Italian      ║
-║5 │ ·  ·  ·  ·  ♟  ·  ·  ·  │         │  Game opening. White has several     ║
-║4 │ ·  ·  ·  ·  ♙  ·  ·  ·  │         │  strong options:                     ║
-║3 │ ·  ·  ·  ·  ·  ♘  ·  ·  │         │                                      ║
-║2 │ ♙  ♙  ♙  ♙  ·  ♙  ♙  ♙  │         │  1. Bc4 - Develops the bishop to    ║
-║1 │ ♖  ♘  ♗  ♕  ♔  ♗  ·  ♖  │         │     an active square, attacking f7   ║
-║  └─────────────────────────────────┘  │                                      ║
-║    a   b   c   d   e   f   g   h      │  2. Bb5 - The Ruy Lopez, one of     ║
-║                                        │     the most popular openings        ║
-║  Game Status                           │                                      ║
-║  Turn: White                           │  3. d4 - Challenging the center      ║
-║  Status: Active                        │     immediately                      ║
-║  Material: Equal                       │                                      ║
-║                                        │  I recommend Bc4 for a classical     ║
-║                                        │  Italian Game setup.                 ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Enter move (e.g., 'e4', 'Nf3') or ask a question...                         ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ q: Quit │ r: Reset │ u: Undo │ h: Help │ a: Analyze Position                ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
 
 ## Installation
 
@@ -96,11 +29,18 @@ Here are some text-based screenshots demonstrating the TUI in action:
     ```
 
 3.  **Set up your environment variables:**
-    Create a `.env` file in the root of the project and add your XAI API key:
+    Create a `.env` file by copying the `.env.sample` template and add your XAI API key:
+    ```bash
+    cp .env.sample .env
+    # Now edit .env and add your key
+    ```
+    Your `.env` file should look like this:
     ```env
     # LLM Provider Configuration
     MODEL_PROVIDER=xai
     MODEL=grok-4-fast-reasoning
+
+    # API Keys
     XAI_API_KEY=your-xai-api-key-here
     ```
 
@@ -119,12 +59,19 @@ python3 chess_tui.py
 
 ```
 chesscode/
-├── chess_agent.py      # Core LangGraph agent for chess analysis
-├── chess_tui.py        # Main Textual TUI application
-├── llm_provider.py     # XAI (Grok) integration
-├── requirements.txt    # Python dependencies
-├── .env                # Environment configuration (not in version control)
-└── README.md           # This file
+├── agents/               # Core LangGraph agent and LLM provider
+│   ├── chess_agent.py
+│   └── llm_provider.py
+├── docs/                 # Documentation and screenshots
+│   ├── 01_initial_state.svg
+│   └── SCREENSHOTS.md
+├── tests/                # Test suite for UI and agent
+│   └── test_ui.py
+├── chess_tui.py          # Main Textual TUI application
+├── requirements.txt      # Python dependencies
+├── .env.sample           # Environment configuration template
+├── README.md             # This file
+└── CHANGELOG.md          # Project version history
 ```
 
 ## Architecture

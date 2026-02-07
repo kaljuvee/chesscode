@@ -8,7 +8,10 @@ from dotenv import load_dotenv
 # Load environment
 load_dotenv()
 
-from chess_agent import ChessAgent
+import sys
+sys.path.insert(0, '/home/ubuntu/chesscode')
+
+from agents.chess_agent import ChessAgent
 import chess
 
 

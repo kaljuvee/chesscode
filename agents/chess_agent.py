@@ -10,7 +10,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Base
 from langchain_core.tools import StructuredTool, tool
 from langgraph.graph import StateGraph, END
 
-from llm_provider import LLMProvider
+from .llm_provider import LLMProvider
 
 
 class ChessAgentState(TypedDict):

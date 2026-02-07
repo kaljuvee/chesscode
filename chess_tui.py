@@ -15,7 +15,7 @@ from textual.widgets import Header, Footer, Static, Input, Button, Label, RichLo
 from textual.binding import Binding
 from textual.reactive import reactive
 
-from chess_agent import ChessAgent
+from agents.chess_agent import ChessAgent
 
 
 # Unicode chess pieces

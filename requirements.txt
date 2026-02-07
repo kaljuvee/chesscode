@@ -1,9 +1,6 @@
-streamlit
-streamlit-chat
+textual
 python-chess
-openai
+langgraph
+langchain-core
+langchain-openai
 python-dotenv
-Pillow
-faiss-cpu
-sentence-transformers
-torch
