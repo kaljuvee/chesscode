@@ -4,3 +4,17 @@ langgraph
 langchain-core
 langchain-openai
 python-dotenv
+
+# Engine
+stockfish
+
+# Database
+asyncpg
+pgvector
+pydantic>=2.0
+
+# Config
+pyyaml
+
+# HTTP (for web tools)
+httpx
