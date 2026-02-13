@@ -2,6 +2,8 @@
 
 Usage:
     python -m tasks.import_pgn [--data-dir data] [--file specific_file.pgn]
+
+Uses streaming PGN parsing for memory efficiency with large files.
 """
 import asyncio
 import os
@@ -15,56 +17,83 @@ from dotenv import load_dotenv
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tools.pgn_tools import load_pgn_file, game_to_dict, ENCODINGS
+# Encodings to try
+ENCODINGS = ["utf-8", "latin-1", "iso-8859-1", "cp1252"]
+
+
+def _parse_date(date_str: str):
+    """Parse a PGN date string into a date object."""
+    if not date_str or date_str == "????.??.??":
+        return None
+    parts = date_str.replace("?", "1").split(".")
+    if len(parts) == 3:
+        try:
+            return date_type(int(parts[0]), int(parts[1]), int(parts[2]))
+        except ValueError:
+            return None
+    return None
+
+
+def _parse_elo(elo_str: str):
+    """Parse an ELO string into an integer."""
+    if elo_str and elo_str.isdigit():
+        return int(elo_str)
+    return None
 
 
 async def import_pgn_file(filepath: str, pool) -> int:
-    """Import a single PGN file into the database. Returns number of games imported."""
+    """Import a single PGN file using streaming parser (one game at a time)."""
     source = os.path.basename(filepath)
-    print(f"Importing {source}...")
+    print(f"Importing {source}...", flush=True)
 
-    games = load_pgn_file(filepath)
     imported = 0
+    errors = 0
 
-    for game in games:
+    # Try different encodings
+    for encoding in ENCODINGS:
         try:
-            headers = dict(game.headers)
-            gd = game_to_dict(game)
+            f = open(filepath, "r", encoding=encoding)
+            # Test reading a line
+            f.readline()
+            f.seek(0)
+            break
+        except UnicodeDecodeError:
+            f.close()
+            continue
+    else:
+        print(f"  ERROR: Cannot read {source} with any encoding")
+        return 0
 
-            # Parse date
-            game_date = None
-            date_str = headers.get("Date", "")
-            if date_str and date_str != "????.??.??":
-                parts = date_str.replace("?", "1").split(".")
-                if len(parts) == 3:
-                    try:
-                        game_date = date_type(int(parts[0]), int(parts[1]), int(parts[2]))
-                    except ValueError:
-                        pass
+    async with pool.acquire() as conn:
+        await conn.execute("SET search_path TO chesscode, public")
 
-            # Parse ELO
-            white_elo = None
-            black_elo = None
+        while True:
             try:
-                we = headers.get("WhiteElo", "")
-                if we and we.isdigit():
-                    white_elo = int(we)
-            except (ValueError, TypeError):
-                pass
+                game = chess.pgn.read_game(f)
+            except Exception:
+                continue
+
+            if game is None:
+                break
+
             try:
-                be = headers.get("BlackElo", "")
-                if be and be.isdigit():
-                    black_elo = int(be)
-            except (ValueError, TypeError):
-                pass
+                headers = dict(game.headers)
+                game_date = _parse_date(headers.get("Date", ""))
+                white_elo = _parse_elo(headers.get("WhiteElo", ""))
+                black_elo = _parse_elo(headers.get("BlackElo", ""))
 
-            # Build PGN text
-            pgn_text = str(game)
+                # Get moves in SAN
+                moves_san = []
+                board = game.board()
+                for move in game.mainline_moves():
+                    moves_san.append(board.san(move))
+                    board.push(move)
 
-            async with pool.acquire() as conn:
+                pgn_text = str(game)
+
                 await conn.execute(
                     """
-                    INSERT INTO games (source_file, event, site, date, round,
+                    INSERT INTO chesscode.games (source_file, event, site, date, round,
                                        white, black, result, white_elo, black_elo,
                                        eco, pgn_text, moves_san, move_count)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
@@ -82,19 +111,22 @@ async def import_pgn_file(filepath: str, pool) -> int:
                     black_elo,
                     headers.get("ECO", ""),
                     pgn_text,
-                    gd.get("moves_san", ""),
-                    gd.get("move_count", 0),
+                    " ".join(moves_san),
+                    len(moves_san),
                 )
                 imported += 1
 
-        except Exception as e:
-            print(f"  Warning: Failed to import game: {e}")
-            continue
+            except Exception as e:
+                errors += 1
+                if errors <= 3:
+                    print(f"  Warning: {e}", flush=True)
+                continue
 
-        if imported % 100 == 0 and imported > 0:
-            print(f"  Imported {imported} games...")
+            if imported % 500 == 0 and imported > 0:
+                print(f"  {source}: {imported} games imported...", flush=True)
 
-    print(f"  Done: {imported} games from {source}")
+    f.close()
+    print(f"  Done: {imported} games from {source} ({errors} errors)", flush=True)
     return imported
 
 
@@ -133,7 +165,7 @@ async def main():
             count = await import_pgn_file(str(pgn_path), pool)
             total += count
 
-    print(f"\nTotal games imported: {total}")
+    print(f"\nTotal games imported: {total}", flush=True)
 
     await close_pool()
 
